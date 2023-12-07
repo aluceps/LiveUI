@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">LiveUI</string>
+    <string name="menu_etc">その他</string>
 </resources>
