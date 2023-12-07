@@ -3,7 +3,9 @@ package me.aluceps.liveui
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintSet
 import me.aluceps.liveui.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -43,6 +45,45 @@ class MainActivity : AppCompatActivity() {
             else -> null
         }?.let {
             Log.d(TAG, "constraintTo: $it")
+            binding.reaction.constraintTo(it)
+            binding.comment.constraintTo(it)
+        }
+    }
+
+    private fun View.constraintTo(constraintTo: ConstraintTo) {
+        ConstraintSet().apply {
+            clone(binding.root)
+            clear(id, ConstraintSet.BOTTOM)
+            when (constraintTo) {
+                ConstraintTo.ON_SCREEN -> {
+                    connect(
+                        id,
+                        ConstraintSet.BOTTOM,
+                        binding.player.id,
+                        ConstraintSet.BOTTOM,
+                        margin
+                    )
+                }
+                ConstraintTo.UNDER_SCREEN -> {
+                    connect(
+                        id,
+                        ConstraintSet.TOP,
+                        binding.player.id,
+                        ConstraintSet.BOTTOM,
+                        margin
+                    )
+                }
+                ConstraintTo.ON_ROOT -> {
+                    connect(
+                        id,
+                        ConstraintSet.BOTTOM,
+                        ConstraintSet.PARENT_ID,
+                        ConstraintSet.BOTTOM,
+                        margin
+                    )
+                }
+            }
+            applyTo(binding.root)
         }
     }
 
