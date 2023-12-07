@@ -5,12 +5,15 @@ import android.util.Log
 import android.view.Menu
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import me.aluceps.liveui.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val margin by lazy { resources.getDimensionPixelSize(R.dimen.spacing_8dp) }
+
+    private val keyboardDetector = KeyboardDetector()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +50,30 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, "constraintTo: $it")
             binding.reaction.constraintTo(it)
             binding.comment.constraintTo(it)
+
+            keyboardDetector.start(
+                activity = this,
+                onShow = {
+                    binding.comment.constraintToKeyboard(
+                        binding.root,
+                        it
+                    )
+                },
+                onHide = {
+                    binding.comment.constraintToScreen(
+                        binding.root,
+                        binding.player,
+                        binding.reaction,
+                        it
+                    )
+                },
+            )
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        keyboardDetector.stop(this)
     }
 
     private fun View.constraintTo(constraintTo: ConstraintTo) {
@@ -84,6 +110,90 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             applyTo(binding.root)
+        }
+    }
+
+    private fun View.constraintToKeyboard(
+        root: ConstraintLayout,
+        constraintTo: ConstraintTo
+    ) {
+        ConstraintSet().apply {
+            clone(root)
+            when (constraintTo) {
+                ConstraintTo.ON_ROOT -> {
+                    // nothing
+                }
+                ConstraintTo.ON_SCREEN -> {
+                    // nothing
+                }
+                ConstraintTo.UNDER_SCREEN -> {
+                    clear(this@constraintToKeyboard.id, ConstraintSet.TOP)
+                }
+            }
+            connect(
+                this@constraintToKeyboard.id,
+                ConstraintSet.BOTTOM,
+                ConstraintSet.PARENT_ID,
+                ConstraintSet.BOTTOM,
+                margin
+            )
+            connect(
+                this@constraintToKeyboard.id,
+                ConstraintSet.END,
+                ConstraintSet.PARENT_ID,
+                ConstraintSet.END,
+                margin
+            )
+            applyTo(root)
+        }
+    }
+
+    private fun View.constraintToScreen(
+        root: ConstraintLayout,
+        screen: View,
+        button: View,
+        constraintTo: ConstraintTo
+    ) {
+        ConstraintSet().apply {
+            clone(root)
+            when (constraintTo) {
+                ConstraintTo.ON_ROOT -> {
+                    connect(
+                        this@constraintToScreen.id,
+                        ConstraintSet.BOTTOM,
+                        ConstraintSet.PARENT_ID,
+                        ConstraintSet.BOTTOM,
+                        margin
+                    )
+                }
+                ConstraintTo.ON_SCREEN -> {
+                    connect(
+                        this@constraintToScreen.id,
+                        ConstraintSet.BOTTOM,
+                        screen.id,
+                        ConstraintSet.BOTTOM,
+                        margin
+                    )
+                }
+                ConstraintTo.UNDER_SCREEN -> {
+                    clear(this@constraintToScreen.id, ConstraintSet.BOTTOM)
+                    connect(
+                        this@constraintToScreen.id,
+                        ConstraintSet.TOP,
+                        screen.id,
+                        ConstraintSet.BOTTOM,
+                        margin
+                    )
+                }
+            }
+            connect(
+                this@constraintToScreen.id,
+                ConstraintSet.END,
+                button.id,
+                ConstraintSet.START,
+                margin
+            )
+            applyTo(root)
         }
     }
 
