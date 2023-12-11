@@ -17,6 +17,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        keyboardDetector.stop(this)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.toolbar_menu, menu)
         return super.onCreateOptionsMenu(menu)
@@ -30,7 +35,6 @@ class MainActivity : AppCompatActivity() {
     private fun setupController() {
         val root = binding.root.height
         val content = binding.player.height
-        // 上下のマージンを考慮
         val button = binding.reaction.height + margin * 2
 
         Log.d(TAG, "root=$root content=$content button=$button")
@@ -78,11 +82,6 @@ class MainActivity : AppCompatActivity() {
                 },
             )
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        keyboardDetector.stop(this)
     }
 
     companion object {
