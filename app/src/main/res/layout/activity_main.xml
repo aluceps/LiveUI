@@ -38,8 +38,10 @@
         android:layout_margin="@dimen/spacing_8dp"
         android:background="?colorPrimary"
         android:paddingHorizontal="@dimen/spacing_8dp"
+        android:textColor="?colorOnPrimary"
         app:layout_constraintBottom_toBottomOf="@id/player"
         app:layout_constraintEnd_toStartOf="@id/reaction"
         app:layout_constraintStart_toStartOf="parent"
+        tools:text="aaa"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>
